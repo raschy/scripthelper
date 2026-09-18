@@ -1,16 +1,17 @@
 'use strict';
 
-
-/*
-function hello(name = 'Welt') {
-    return `Hallo ${name}!`;
-}
-*/
-
-
+const core = require("./helper_core");
 const datapoints = require("./helper_datapoints");
 
 module.exports = {
+    // =========================================================
+    // Core
+    // =========================================================
+    ...core,
+
+    // =========================================================
+    // Datapoints
+    // =========================================================
     helperInit: datapoints.helperInit,
 
     dpCreate: datapoints.dpCreate,
@@ -20,9 +21,3 @@ module.exports = {
     dpDelete: datapoints.dpDelete,
     dpCreateObject: datapoints.dpCreateObject
 };
-
-/*
-module.exports = {
-    hello
-};
-*/
