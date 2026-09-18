@@ -40,11 +40,41 @@ function logDebug(message) {
     }
 }
 
-
-// ============================================================
-// DP-ID auflösen
-// ============================================================
-
+/**
+ * =========================================================================
+ * resolveDp()
+ * -------------------------------------------------------------------------
+ * Erzeugt aus einer Kurz-ID oder vollständigen ID eine gültige
+ * ioBroker-Datenpunkt-ID.
+ * 
+ * Voraussetzung:
+ *      Datenpunkte dürfen grundsätzlich nur unter '0_userdata.0'
+ *      angelegt werden. Hierzu muss dann nur der Name angegeben 
+ *      werden. Der wird hier auf ungültige Zeichen geprüft.
+ *      Ebenso kann eine komplette ID angegeben werden. 
+ *      Zur einfacheren Strukturierung kann über 
+ *      'dp_Project' ein Unterordner angesprochen werden.
+ *
+ * Regeln:
+ *   - Führende/trailing Leerzeichen entfernen
+ *   - Mehrfache Leerzeichen -> "_"
+ *   - Ungültige Zeichen -> "_"
+ *   - Mehrere "_" zusammenfassen
+ *   - "." am Ende entfernen
+ *   - Leere Namen verhindern
+ *   - Vollständige IDs unverändert zurückgeben
+ *
+ * Beispiele:   dp_Project = "Test"
+ *
+ *   "Temperatur"        -  > 0_userdata.0.Test.Temperatur
+ *   " Temp 1 "             -> 0_userdata.0.Test.Temp_1
+ *   "A/B:C"                -> 0_userdata.0.Test.A_B_C
+ *   "Temp..."              -> 0_userdata.0.Test.Temp
+ *   "0_userdata.0.X.Y"     -> 0_userdata.0.X.Y
+ *   "hm-rpc.0.ABC.1.LEVEL" -> hm-rpc.0.ABC.1.LEVEL
+ *
+ * =========================================================================
+*/
 function resolveDp(dp) {
 
     if (dp === null || dp === undefined)
@@ -114,10 +144,13 @@ function isValidObjectType(type) {
 }
 
 
-// ============================================================
-// Common-Objekt erzeugen
-// ============================================================
-
+/**
+ * =========================================================================
+ * buildCommon()
+ * -------------------------------------------------------------------------
+ * Erzeugt das ioBroker-common Objekt.
+ * =========================================================================
+ */
 function buildCommon({
     name,
     desc = "",
@@ -172,10 +205,27 @@ function buildCommon({
 }
 
 
-// ============================================================
-// Datenpunkt erzeugen
-// ============================================================
-
+/**
+ * =========================================================================
+ * dpCreate()
+ * -------------------------------------------------------------------------
+ * Definiert einen Datenpunkt.
+ *
+ *  Existiert der Datenpunkt bereits, wird lediglich seine vollständige ID 
+ *  zurückgegeben.
+ * 
+ *      dpCreate({ id, name, desc, type, unit, write })
+ * 
+ *  Parameter:
+ *      id, name und type sind Mindestvoraussetzung
+ *      desc, unit und write sind optional
+ *
+ *      Gestützt wird hier auf die globale Variable "dp_Project".
+ *      Existiert diese Variable nicht, wird grundsätzlich mit
+ *      '0_userdata.0' gearbeitet.
+ *
+ * =========================================================================
+ */
 async function dpCreate({
     id,
     name,
@@ -224,10 +274,13 @@ async function dpCreate({
 }
 
 
-// ============================================================
-// Datenpunkt lesen
-// ============================================================
-
+/**
+ * =========================================================================
+ * dpRead()
+ * -------------------------------------------------------------------------
+ * Lesen aus Datenpunkt
+ * =========================================================================
+ */
 function dpRead(dp, defaultValue = null) {
 
     if (!_iob) {
@@ -238,9 +291,7 @@ function dpRead(dp, defaultValue = null) {
 
     if (!_iob.existsObject(dp)) {
 
-        logDebug(
-            `(f) dpRead| '${dp}' existiert nicht.`
-        );
+        logDebug(`(f) dpRead| '${dp}' existiert nicht.`);
 
         return defaultValue;
     }
@@ -263,10 +314,13 @@ function dpRead(dp, defaultValue = null) {
 }
 
 
-// ============================================================
-// Datenpunkt schreiben
-// ============================================================
-
+/**
+ * =========================================================================
+ * dpWrite()
+ * -------------------------------------------------------------------------
+ * Schreiben in Datenpunkt
+ * =========================================================================
+ */
 async function dpWrite(id, value, ack = false) {
 
     const dp = resolveDp(id);
@@ -302,10 +356,13 @@ async function dpWrite(id, value, ack = false) {
     }
 }
 
-// ============================================================
-// Datenpunkt vorhanden?
-// ============================================================
-
+/**
+ * =========================================================================
+ * dpExists()
+ * -------------------------------------------------------------------------
+ * Prüfen ob Datenpunkt vorhanden ist 
+ * =========================================================================
+ */
 function dpExists(id) {
 
     if (!_iob) {
@@ -316,10 +373,13 @@ function dpExists(id) {
 }
 
 
-// ============================================================
-// Datenpunkt löschen
-// ============================================================
-
+/**
+ * =========================================================================
+ * dpDelete()
+ * -------------------------------------------------------------------------
+ * Löschen eines Datenpunkts
+ * =========================================================================
+ */
 async function dpDelete(id) {
 
     if (!_iob) {
@@ -359,10 +419,22 @@ async function dpDelete(id) {
 }
 
 
-// ============================================================
-// Objekt erzeugen
-// ============================================================
-
+/**
+ * =========================================================================
+ * dpCreateObject()
+ * -------------------------------------------------------------------------
+ * Erzeugt ein ioBroker-Objekt.
+ *
+ * type : folder | channel | device
+ * id   : Kurz-ID oder vollständige ioBroker-ID
+ * name : Anzeigename
+ * desc : Beschreibung
+ *
+ * Rückgabe:
+ *   vollständige ID bei Erfolg
+ *   false bei Fehler
+ * =========================================================================
+ */
 async function dpCreateObject({
     type,
     id,
