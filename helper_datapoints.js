@@ -264,6 +264,45 @@ function dpRead(dp, defaultValue = null) {
 
 
 // ============================================================
+// Datenpunkt schreiben
+// ============================================================
+
+async function dpWrite(id, value, ack = false) {
+
+    const dp = resolveDp(id);
+
+    logDebug(
+        `(f) dpWrite| Resolve: ${id} => ${dp}`
+    );
+
+    if (!_iob.existsObject(dp)) {
+
+        _iob.log(
+            `(f) dpWrite| Datenpunkt "${dp}" existiert nicht.`,
+            "warn"
+        );
+
+        return false;
+    }
+
+    try {
+
+        await _iob.setStateAsync(dp, value, ack);
+
+        return true;
+
+    } catch (err) {
+
+        _iob.log(
+            `(f) dpWrite| ${err}`,
+            "warn"
+        );
+
+        return false;
+    }
+}
+
+// ============================================================
 // Datenpunkt vorhanden?
 // ============================================================
 
@@ -393,6 +432,7 @@ module.exports = {
     helperInit,
     dpCreate,
     dpRead,
+    dpWrite,
     dpExists,
     dpDelete,
     dpCreateObject

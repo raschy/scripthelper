@@ -15,6 +15,7 @@ module.exports = {
 
     dpCreate: datapoints.dpCreate,
     dpRead: datapoints.dpRead,
+    dpWrite: datapoints.dpWrite,
     dpExists: datapoints.dpExists,
     dpDelete: datapoints.dpDelete,
     dpCreateObject: datapoints.dpCreateObject
