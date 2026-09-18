@@ -1,6 +1,6 @@
 {
-    "name": "iobroker-helper-test",
-    "version": "0.1.0",
+    "name": "scripthelper",
+    "version": "0.1.1",
     "description": "Testmodul fuer ioBroker JavaScript Adapter",
-    "main": "index.js"
+    "main": "helper.js"
 }
