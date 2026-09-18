@@ -1,0 +1,6 @@
+{
+    "name": "iobroker-helper-test",
+    "version": "0.1.0",
+    "description": "Testmodul fuer ioBroker JavaScript Adapter",
+    "main": "index.js"
+}
