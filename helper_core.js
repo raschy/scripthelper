@@ -208,8 +208,7 @@ function parseJSON(value, def = null) {
 
 function timeToSeconds(value) {
 
-    if (value instanceof Date) {
-
+    if (Object.prototype.toString.call(value) === '[object Date]') {
         return value.getHours() * 3600
              + value.getMinutes() * 60
              + value.getSeconds();
@@ -423,6 +422,38 @@ function ts2Time(unixTimestamp) {
 
 // -------------------------------------------------------------------------
 
+function dayOfYear(date) {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start;
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    return Math.floor(diff / oneDay);
+}
+
+// -------------------------------------------------------------------------
+
+function weekOfYear(date) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+
+    // Donnerstag bestimmt die ISO-Woche
+    d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+
+    const week1 = new Date(
+        d.getFullYear(),
+        0,
+        4
+    );
+
+    return 1 + Math.round(
+        ((d - week1) / 86400000
+        - 3
+        + (week1.getDay() + 6) % 7) / 7
+    );
+}
+
+// -------------------------------------------------------------------------
+
 function makeCronString(Schaltzeit) {
 
     const [hours, minutes, seconds] =
@@ -463,5 +494,7 @@ module.exports = {
     zeitZuMinuten,
     formatTime,
     ts2Time,
+    dayOfYear,
+    weekOfYear,
     makeCronString
 };
